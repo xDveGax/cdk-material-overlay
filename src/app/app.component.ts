@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
+
 import { FilePreviewOverlayService } from './file-preview-overlay.service';
-
-import { FilePreviewOverlayRef } from './file-preview-overlay-ref';
-
 import { STATIC_FILE_DATE } from './data';
 
 @Component({
@@ -16,7 +14,7 @@ export class AppComponent  {
   constructor(private previewDialog: FilePreviewOverlayService) { }
 
   showPreview(file) {
-    const dialogRef: FilePreviewOverlayRef = this.previewDialog.open({
+    this.previewDialog.open({
       image: file
     });
   }

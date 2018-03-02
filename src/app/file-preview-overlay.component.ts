@@ -1,4 +1,4 @@
-import { Component, Input, Inject, HostListener, EventEmitter } from '@angular/core';
+import { Component, Inject, HostListener, EventEmitter } from '@angular/core';
 import { trigger, state, style, transition, animate, AnimationEvent, group, query } from '@angular/animations';
 
 import { FilePreviewOverlayRef } from './file-preview-overlay-ref';

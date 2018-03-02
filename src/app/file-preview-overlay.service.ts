@@ -1,4 +1,4 @@
-import { Injectable, Inject, OnInit, Injector, ComponentRef } from '@angular/core';
+import { Injectable, Injector, ComponentRef } from '@angular/core';
 import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal, PortalInjector } from '@angular/cdk/portal';
 
@@ -24,7 +24,7 @@ const DEFAULT_CONFIG: FilePreviewDialogConfig = {
   backdropClass: 'dark-backdrop',
   panelClass: 'tm-file-preview-dialog-panel',
   image: null
-}
+};
 
 @Injectable()
 export class FilePreviewOverlayService {
@@ -33,7 +33,7 @@ export class FilePreviewOverlayService {
     private injector: Injector,
     private overlay: Overlay) { }
 
-  open(config: FilePreviewDialogConfig = {}) {
+  open(config: FilePreviewDialogConfig = {}): FilePreviewOverlayRef {
     // Override default configuration
     const dialogConfig = { ...DEFAULT_CONFIG, ...config };
 
@@ -43,9 +43,7 @@ export class FilePreviewOverlayService {
     // Instantiate remote control
     const dialogRef = new FilePreviewOverlayRef(overlayRef);
 
-    const overlayComponent = this.attachDialogContainer(overlayRef, dialogConfig, dialogRef);
-
-    dialogRef.componentInstance = overlayComponent;
+    dialogRef.componentInstance = this.attachDialogContainer(overlayRef, dialogConfig, dialogRef);
 
     overlayRef.backdropClick().subscribe(_ => dialogRef.close());
 
@@ -81,14 +79,12 @@ export class FilePreviewOverlayService {
       .centerHorizontally()
       .centerVertically();
 
-    const overlayConfig = new OverlayConfig({
+    return new OverlayConfig({
       hasBackdrop: config.hasBackdrop,
       backdropClass: config.backdropClass,
       panelClass: config.panelClass,
       scrollStrategy: this.overlay.scrollStrategies.block(),
       positionStrategy
     });
-
-    return overlayConfig;
   }
 }
