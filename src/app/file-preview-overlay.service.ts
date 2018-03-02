@@ -45,6 +45,8 @@ export class FilePreviewOverlayService {
 
     const overlayComponent = this.attachDialogContainer(overlayRef, dialogConfig, dialogRef);
 
+    dialogRef.componentInstance = overlayComponent;
+
     overlayRef.backdropClick().subscribe(_ => dialogRef.close());
 
     return dialogRef;
@@ -79,12 +81,14 @@ export class FilePreviewOverlayService {
       .centerHorizontally()
       .centerVertically();
 
-    return new OverlayConfig({
+    const overlayConfig = new OverlayConfig({
       hasBackdrop: config.hasBackdrop,
       backdropClass: config.backdropClass,
       panelClass: config.panelClass,
       scrollStrategy: this.overlay.scrollStrategies.block(),
       positionStrategy
     });
+
+    return overlayConfig;
   }
 }
