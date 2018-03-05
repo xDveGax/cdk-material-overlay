@@ -15,7 +15,7 @@ export class AppComponent  {
 
   showPreview(file) {
     this.previewDialog.open({
-      image: file
+      video: file
     });
   }
 }

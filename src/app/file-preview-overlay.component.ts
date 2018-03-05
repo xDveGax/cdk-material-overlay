@@ -1,5 +1,5 @@
-import { Component, Inject, HostListener, EventEmitter } from '@angular/core';
-import { trigger, state, style, transition, animate, AnimationEvent, group, query } from '@angular/animations';
+import { Component, Inject, HostListener, EventEmitter, OnInit } from '@angular/core';
+import { trigger, state, style, transition, animate, AnimationEvent } from '@angular/animations';
 
 import { FilePreviewOverlayRef } from './file-preview-overlay-ref';
 import { FILE_PREVIEW_DIALOG_DATA } from './file-preview-overlay.tokens';
@@ -12,7 +12,7 @@ const ANIMATION_TIMINGS = '400ms cubic-bezier(0.25, 0.8, 0.25, 1)';
   template: `
     <tm-file-preview-overlay-toolbar>
       <mat-icon>description</mat-icon>
-      {{ image.name }}
+      {{ video.name }}
     </tm-file-preview-overlay-toolbar>
 
     <div class="overlay-content"
@@ -23,7 +23,28 @@ const ANIMATION_TIMINGS = '400ms cubic-bezier(0.25, 0.8, 0.25, 1)';
         <mat-spinner></mat-spinner>
       </div>
 
-      <img [@fade]="loading ? 'fadeOut' : 'fadeIn'" (load)="onLoad($event)" [src]="image.url">
+      <div class="video-container">
+        <div id="embed"></div>
+        <div class="video-info">
+          <div class="title">
+            <span class="mat-title">{{video.title}}</span>
+            <span class="mat-body-2">mat-body-2:</span>
+            <span class="mat-body-1">mat-body-1</span>
+            <span class="mat-body-1">mat-body-1</span>
+          </div>
+          <div class="tags">
+            <p class="mat-body-2">Tags: </p>
+            {{video.tags}}
+          </div>
+          <div class="description">
+            <p class="mat-body-2">Description: </p>
+            {{video.description}}
+          </div>
+          <div class="cta">
+            <button mat-raised-button>OK</button>
+          </div>
+        </div>
+      </div>
     </div>
   `,
   styles: [`
@@ -55,6 +76,15 @@ const ANIMATION_TIMINGS = '400ms cubic-bezier(0.25, 0.8, 0.25, 1)';
     .overlay-content {
       padding: 1em;
     }
+
+    .video-container {
+      background-color: white;
+      width: 640px;
+    }
+
+    .video-info {
+      padding: 10px 20px;
+    }
   `],
   animations: [
     trigger('fade', [
@@ -70,11 +100,17 @@ const ANIMATION_TIMINGS = '400ms cubic-bezier(0.25, 0.8, 0.25, 1)';
     ])
   ]
 })
-export class FilePreviewOverlayComponent {
+export class FilePreviewOverlayComponent implements OnInit {
 
   loading = true;
+
   animationState: 'void' | 'enter' | 'leave' = 'enter';
   animationStateChanged = new EventEmitter<AnimationEvent>();
+
+  videoUrl: string;
+  endpoint = 'http://www.vimeo.com/api/oembed.json';
+  callback = 'embedVideo';
+  url: string;
 
   @HostListener('document:keydown', ['$event']) private handleKeydown(event: KeyboardEvent) {
     if (event.keyCode === ESCAPE) {
@@ -84,10 +120,25 @@ export class FilePreviewOverlayComponent {
 
   constructor(
     public dialogRef: FilePreviewOverlayRef,
-    @Inject(FILE_PREVIEW_DIALOG_DATA) public image: any) { }
+    @Inject(FILE_PREVIEW_DIALOG_DATA) public video: any) { }
 
-  onLoad(event: Event) {
-    this.loading = false;
+  ngOnInit() {
+    this.loading = true;
+    this.videoUrl = this.video.url;
+
+    // All this will be indeed when the endpoint will be ready.
+    this.url = this.endpoint + '?url=' + encodeURIComponent(this.videoUrl) + '&callback=' + this.callback + '&width=640';
+    const embed = document.createElement('script');
+    embed.setAttribute('type', 'text/javascript');
+    embed.innerHTML = function embedVideo(video) {
+      return document.getElementById('embed').innerHTML = video.html;
+    };
+    document.getElementsByTagName('head', ).item(0).appendChild(embed);
+
+    const js = document.createElement('script');
+    js.setAttribute('type', 'text/javascript');
+    js.setAttribute('src', this.url);
+    document.getElementsByTagName('head', ).item(0).appendChild(js);
   }
 
   onAnimationStart(event: AnimationEvent) {

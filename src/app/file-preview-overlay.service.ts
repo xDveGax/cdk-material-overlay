@@ -7,7 +7,7 @@ import { FilePreviewOverlayComponent } from './file-preview-overlay.component';
 import { FilePreviewOverlayRef } from './file-preview-overlay-ref';
 import { FILE_PREVIEW_DIALOG_DATA } from './file-preview-overlay.tokens';
 
-export interface Image {
+export interface Video {
   name: string;
   url: string;
 }
@@ -16,14 +16,14 @@ interface FilePreviewDialogConfig {
   panelClass?: string;
   hasBackdrop?: boolean;
   backdropClass?: string;
-  image?: Image;
+  video?: Video;
 }
 
 const DEFAULT_CONFIG: FilePreviewDialogConfig = {
   hasBackdrop: true,
   backdropClass: 'dark-backdrop',
   panelClass: 'tm-file-preview-dialog-panel',
-  image: null
+  video: null
 };
 
 @Injectable()
@@ -68,7 +68,7 @@ export class FilePreviewOverlayService {
     const injectionTokens = new WeakMap();
 
     injectionTokens.set(FilePreviewOverlayRef, dialogRef);
-    injectionTokens.set(FILE_PREVIEW_DIALOG_DATA, config.image);
+    injectionTokens.set(FILE_PREVIEW_DIALOG_DATA, config.video);
 
     return new PortalInjector(this.injector, injectionTokens);
   }
