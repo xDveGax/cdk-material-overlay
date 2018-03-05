@@ -3,16 +3,15 @@ import { trigger, state, style, transition, animate, AnimationEvent } from '@ang
 
 import { FilePreviewOverlayRef } from './file-preview-overlay-ref';
 import { FILE_PREVIEW_DIALOG_DATA } from './file-preview-overlay.tokens';
+import { ESCAPE, ENTER} from '@angular/cdk/keycodes';
 
-const ESCAPE = 27;
 const ANIMATION_TIMINGS = '400ms cubic-bezier(0.25, 0.8, 0.25, 1)';
 
 @Component({
   selector: 'file-preview-overlay',
   template: `
     <tm-file-preview-overlay-toolbar>
-      <mat-icon>description</mat-icon>
-      {{ video.name }}
+      <mat-icon class="test" (click)="closeOverlay()">clear</mat-icon>
     </tm-file-preview-overlay-toolbar>
 
     <div class="overlay-content"
@@ -28,8 +27,7 @@ const ANIMATION_TIMINGS = '400ms cubic-bezier(0.25, 0.8, 0.25, 1)';
         <div class="video-info">
           <div class="title">
             <span class="mat-title">{{video.title}}</span>
-            <span class="mat-body-2">mat-body-2:</span>
-            <span class="mat-body-1">mat-body-1</span>
+            <span class="mat-body-2">mat-body-2: mat-body-1</span>
             <span class="mat-body-1">mat-body-1</span>
           </div>
           <div class="tags">
@@ -41,7 +39,7 @@ const ANIMATION_TIMINGS = '400ms cubic-bezier(0.25, 0.8, 0.25, 1)';
             {{video.description}}
           </div>
           <div class="cta">
-            <button mat-raised-button>OK</button>
+            <button mat-raised-button (click)="closeOverlay()">OK</button>
           </div>
         </div>
       </div>
@@ -85,6 +83,16 @@ const ANIMATION_TIMINGS = '400ms cubic-bezier(0.25, 0.8, 0.25, 1)';
     .video-info {
       padding: 10px 20px;
     }
+
+    .title {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .cta {
+      display: flex;
+      justify-content: flex-end;
+    }
   `],
   animations: [
     trigger('fade', [
@@ -116,11 +124,19 @@ export class FilePreviewOverlayComponent implements OnInit {
     if (event.keyCode === ESCAPE) {
       this.dialogRef.close();
     }
+
+    if (event.keyCode === ENTER) {
+      return false;
+    }
   }
 
   constructor(
     public dialogRef: FilePreviewOverlayRef,
     @Inject(FILE_PREVIEW_DIALOG_DATA) public video: any) { }
+
+  closeOverlay() {
+    this.dialogRef.close();
+  }
 
   ngOnInit() {
     this.loading = true;
@@ -130,9 +146,9 @@ export class FilePreviewOverlayComponent implements OnInit {
     this.url = this.endpoint + '?url=' + encodeURIComponent(this.videoUrl) + '&callback=' + this.callback + '&width=640';
     const embed = document.createElement('script');
     embed.setAttribute('type', 'text/javascript');
-    embed.innerHTML = function embedVideo(video) {
+    embed.textContent = `function embedVideo(video) {
       return document.getElementById('embed').innerHTML = video.html;
-    };
+    }`;
     document.getElementsByTagName('head', ).item(0).appendChild(embed);
 
     const js = document.createElement('script');
