@@ -116,7 +116,7 @@ export class FilePreviewOverlayComponent implements OnInit {
   animationStateChanged = new EventEmitter<AnimationEvent>();
 
   videoUrl: string;
-  endpoint = 'http://www.vimeo.com/api/oembed.json';
+  endpoint = 'https://www.vimeo.com/api/oembed.json';
   callback = 'embedVideo';
   url: string;
 
